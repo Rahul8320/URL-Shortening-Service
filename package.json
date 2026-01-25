@@ -1,0 +1,35 @@
+{
+  "name": "url-shortening-service",
+  "version": "1.0.0",
+  "description": "Building a URL Shortener API that helps shorten long URLs.",
+  "main": "src/index.ts",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "node --watch src/index.ts",
+    "start": "node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rahul8320/URL-Shortening-Service.git"
+  },
+  "keywords": [
+    "url-shortening-service",
+    "typescript-api"
+  ],
+  "author": "Rahul Dey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rahul8320/URL-Shortening-Service/issues"
+  },
+  "homepage": "https://github.com/Rahul8320/URL-Shortening-Service#readme",
+  "dependencies": {
+    "@trpc/server": "^11.8.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}
