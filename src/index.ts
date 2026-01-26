@@ -3,6 +3,7 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import { generateOpenApiDocument } from "trpc-to-openapi";
 import { appRouter } from "./server/index.ts";
 import { createContext } from "./server/context.ts";
+import fs from "fs/promises";
 
 const app = express();
 const PORT = 5000;
@@ -12,8 +13,10 @@ app.use(express.json());
 const openApiDocument = generateOpenApiDocument(appRouter, {
   title: "URL Shorten API",
   version: "1.0.0",
-  baseUrl: "http://localhost:5000",
+  baseUrl: "http://localhost:5000/trpc",
 });
+
+fs.writeFile("./openapi-specification.json", JSON.stringify(openApiDocument));
 
 app.get("/", (_, res: Response) => {
   res
