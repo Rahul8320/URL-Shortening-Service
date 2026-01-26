@@ -6,14 +6,17 @@ import {
   shortenModel,
 } from "../models/shorten.model.ts";
 import { randomUUID } from "crypto";
+import urlShortenService from "../services/urlShorten.service.ts";
 
 const SHORTENS: Shorten[] = [
   {
-    id: "1",
+    id: randomUUID(),
     url: "https://www.example.com/some/long/url",
-    shortCode: "abc123",
-    createdAt: "2021-09-01T12:00:00Z",
-    updatedAt: "2021-09-01T12:00:00Z",
+    shortCode: urlShortenService.generateShortCode(
+      "https://www.example.com/some/long/url",
+    ),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];
 
@@ -35,7 +38,7 @@ export const shortenRouter = router({
       const shorten: Shorten = {
         id: id,
         url: input.url,
-        shortCode: `${id.slice(0, 6)}`,
+        shortCode: urlShortenService.generateShortCode(input.url),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
