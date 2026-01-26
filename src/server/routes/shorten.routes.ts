@@ -14,6 +14,15 @@ const SHORTENS: Shorten[] = [
 
 export const shortenRouter = router({
   getRecentShortenUrls: publicProcedure
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/shorten",
+        tags: ["Shorten"],
+        description: "Get recent shorten urls",
+        contentTypes: ["application/json"],
+      },
+    })
     .input(z.undefined())
     .output(z.array(shortenModel))
     .query(() => {
