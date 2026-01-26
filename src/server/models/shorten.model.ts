@@ -9,3 +9,9 @@ export const shortenModel = z.object({
 });
 
 export type Shorten = z.infer<typeof shortenModel>;
+
+export const createShortenRequest = z
+  .object({
+    url: z.url().describe("Original Long URL").toLowerCase(),
+  })
+  .strict();

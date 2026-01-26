@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../trpc.ts";
-import { type Shorten, shortenModel } from "../models/shorten.model.ts";
+import {
+  createShortenRequest,
+  type Shorten,
+  shortenModel,
+} from "../models/shorten.model.ts";
 import { randomUUID } from "crypto";
 
 const SHORTENS: Shorten[] = [
@@ -20,15 +24,11 @@ export const shortenRouter = router({
         method: "POST",
         path: "/shorten.createShortenUrl",
         tags: ["Shorten"],
-        description: "Create shorten url for long url",
+        description: "Create shorten url form long url",
         contentTypes: ["application/json"],
       },
     })
-    .input(
-      z.object({
-        url: z.url().describe("Original Long URL"),
-      }),
-    )
+    .input(createShortenRequest)
     .output(shortenModel)
     .mutation(({ input }) => {
       const id = randomUUID();
@@ -55,6 +55,6 @@ export const shortenRouter = router({
     .input(z.undefined())
     .output(z.array(shortenModel))
     .query(() => {
-      return SHORTENS;
+      return SHORTENS.toReversed().slice(0, 5);
     }),
 });
