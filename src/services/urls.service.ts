@@ -1,32 +1,47 @@
-import { createHash } from "crypto";
-
 class UrlsService {
   private urlMap = new Map<string, string>();
   private CHARSET =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private CHARSET_LEN = 62;
 
-  private generateShortCode = (url: string): string => {
-    // 1. Create SHA-256 Hash
-    const hash = createHash("sha256").update(url).digest("hex");
+  private randomBytes(n = 12) {
+    const arr = new Uint8Array(n);
+    crypto.getRandomValues(arr);
+    return arr;
+  }
 
-    // 2. Take a slice of the hash (first 12 characters)
-    // We convert hex to a big integer to map it to Base62
-    let decimalValue = BigInt(`0x${hash.substring(0, 15)}`);
-    const zero = BigInt(0);
-    const sixtyTwo = BigInt(62);
-
-    let code = "";
-    while (decimalValue > zero && code.length < 10) {
-      code += this.CHARSET[Number(decimalValue % sixtyTwo)];
-      decimalValue /= sixtyTwo;
+  private randomBase62CharIndex(randomByte: number): number {
+    // Use rejection sampling: accept bytes < 248 because 248 % 62 == 0
+    // This maps uniformly to 0..61 using (byte % 62)
+    if (randomByte >= 248) {
+      return -1;
     }
 
-    // 3. Pad if necessary (though with 15 hex chars, it usually hits 10)
-    return code.padEnd(10, "0");
-  };
+    return randomByte % this.CHARSET_LEN;
+  }
+
+  private generateCode8(): string {
+    const bytes = this.randomBytes(12); // 12 bytes enough to produce 8 chars with rejection
+    let code: string = "";
+
+    for (let i = 0; i < bytes.length && code.length < 8; ++i) {
+      const idx = this.randomBase62CharIndex(bytes[i]);
+
+      if (idx >= 0) {
+        code += this.CHARSET[idx];
+      }
+    }
+
+    // If not enough chars due to rejections, loop again (very rare)
+    if (code.length < 8) {
+      return this.generateCode8();
+    }
+
+    return code;
+  }
 
   public getShortCode = (longUrl: string): string => {
-    const shortCode = this.generateShortCode(longUrl);
+    const shortCode = this.generateCode8();
     this.urlMap.set(shortCode, longUrl);
     return shortCode;
   };
